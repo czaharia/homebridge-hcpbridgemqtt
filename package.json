@@ -1,8 +1,8 @@
 {
   "private": false,
-  "displayName": "MQTT garage door opener",
+  "displayName": "Homebridge HCPBridgeMqtt",
   "name": "homebridge-garagedoor-hcpbridgemqtt",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A Homebridge plugin for HCPBridgeMqtt",
   "license": "Apache-2.0",
   "repository": {
