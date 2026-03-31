@@ -197,28 +197,28 @@ export class GarageDoorOpenerPlatform implements DynamicPlatformPlugin {
     }
   }
 
-	mapCurrentDoorState(value: string): number {
-	  switch (value) {
-	    case 'open':    return this.Characteristic.CurrentDoorState.OPEN;
-	    case 'closed':  return this.Characteristic.CurrentDoorState.CLOSED;
-	    case 'opening': return this.Characteristic.CurrentDoorState.OPENING;
-	    case 'closing': return this.Characteristic.CurrentDoorState.CLOSING;
-	    case 'stopped': return this.Characteristic.CurrentDoorState.STOPPED;
-	    default:        return -1;
-	  }
-	}
+  mapCurrentDoorState(value: string): number {
+    switch (value) {
+      case 'open':    return this.Characteristic.CurrentDoorState.OPEN;
+      case 'closed':  return this.Characteristic.CurrentDoorState.CLOSED;
+      case 'opening': return this.Characteristic.CurrentDoorState.OPENING;
+      case 'closing': return this.Characteristic.CurrentDoorState.CLOSING;
+      case 'stopped': return this.Characteristic.CurrentDoorState.STOPPED;
+      default:        return -1;
+    }
+  }
 
-	mapTargetDoorState(value: string): number {
-	  switch (value) {
-	    case 'open':  return this.Characteristic.TargetDoorState.OPEN;
-	    case 'close': return this.Characteristic.TargetDoorState.CLOSED;
-	    default:      return -1;
-	  }
-	}
+  mapTargetDoorState(value: string): number {
+    switch (value) {
+      case 'open':  return this.Characteristic.TargetDoorState.OPEN;
+      case 'close': return this.Characteristic.TargetDoorState.CLOSED;
+      default:      return -1;
+    }
+  }
 
-	publishTargetDoorState(value: number) {
-		const payload = value === this.Characteristic.TargetDoorState.OPEN ? 'open' : 'close';
-		this.log.debug('publishing target door state: ', payload, ' to topic: ', this.getTargetTopic());
-		this.garageClient?.publishValue(this.getTargetTopic(), payload);
-	}
+  publishTargetDoorState(value: number) {
+    const payload = value === this.Characteristic.TargetDoorState.OPEN ? 'open' : 'close';
+    this.log.debug('publishing target door state: ', payload, ' to topic: ', this.getTargetTopic());
+    this.garageClient?.publishValue(this.getTargetTopic(), payload);
+  }
 }
