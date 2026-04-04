@@ -42,6 +42,20 @@ export class GarageDoorOpenerPlatform implements DynamicPlatformPlugin {
     void this.mqttSubscription();
   }
 
+  isLampEnabled(): boolean {
+    return (this.config['enableLamp'] as boolean) ?? false;
+  }
+  
+  getLampCommandTopic(): string {
+    return (this.config['lampCommandTopic'] as string) ?? 'hormann/hcpbridge/command/lamp';
+  }
+  
+  publishLampCommand(value: boolean) {
+    const payload = value ? 'true' : 'false';
+    this.log.debug('publishing lamp command: ', payload, ' to topic: ', this.getLampCommandTopic());
+    this.garageClient?.publishValue(this.getLampCommandTopic(), payload);
+  }
+  
   getAvailabilityTopic(): string {
     return (this.config['availabilityTopic'] as string) ?? 'hormann/hcpbridge/availability';
   }
@@ -102,9 +116,17 @@ export class GarageDoorOpenerPlatform implements DynamicPlatformPlugin {
       {
         let stateString = stringValue;
         try {
-          const json = JSON.parse(stringValue) as { valid: boolean; doorstate: string; detailedState: string };
+          const json = JSON.parse(stringValue) as { 
+            valid: boolean;
+            doorstate: string;
+            detailedState: string;
+            lamp: string;
+          };
           if (json.valid === true && typeof json.doorstate === 'string') {
             stateString = json.doorstate;
+            if (typeof json.lamp === 'string') {
+              this.garageAccessory?.updateLampState(json.lamp === 'true');
+            }
             if (json.detailedState === 'stopped') {
               this.log.info('Door stopped');
               this.garageAccessory?.updateTargetDoorStateWithoutPublishing(this.Characteristic.TargetDoorState.OPEN);

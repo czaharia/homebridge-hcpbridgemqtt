@@ -18,6 +18,12 @@
 		"default": "Garage Door",
 	    "description": "Name shown in the Home app"
 	  },
+	  "enableLamp": {
+	    "type": "boolean",
+	    "title": "Enable Lamp Accessory",
+	    "description": "Expose the garage lamp as a Lightbulb in HomeKit",
+	    "default": false
+	  },
       "mqttHost": {
         "type": "string",
         "title": "URL",
@@ -63,6 +69,13 @@
 	    "placeholder": "hormann/hcpbridge/availability",
 		"default": "hormann/hcpbridge/availability",
 	    "description": "MQTT LWT topic. Payload 'online'/'offline' marks device as available in HomeKit."
+	  },
+	  "lampCommandTopic": {
+	    "type": "string",
+	    "title": "Lamp Command Topic",
+	    "placeholder": "hormann/hcpbridge/command/lamp",
+		"default": "hormann/hcpbridge/command/lamp",
+	    "description": "MQTT topic to control the lamp (publishes true/false)"
 	  },
       "mqttOpenMessage": {
         "type": "string",

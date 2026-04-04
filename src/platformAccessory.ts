@@ -5,6 +5,7 @@ import { GarageState } from './garagestate.js';
 export class GarageDoorOpenerAccessory {
   private service: Service;
   private garageState: GarageState;
+  private lampService: Service | null = null;
   
   constructor(
         private readonly platform: GarageDoorOpenerPlatform,
@@ -24,6 +25,17 @@ export class GarageDoorOpenerAccessory {
 
     this.service = this.accessory.getService(this.platform.Service.GarageDoorOpener)
         || this.accessory.addService(this.platform.Service.GarageDoorOpener);
+
+    if (this.platform.isLampEnabled()) {
+      this.lampService = this.accessory.getService(this.platform.Service.Lightbulb)
+        || this.accessory.addService(this.platform.Service.Lightbulb, 'Garage Lamp');
+
+      this.lampService.getCharacteristic(this.platform.Characteristic.On)
+        .onSet(this.setLampState.bind(this))
+        .onGet(this.getLampState.bind(this));
+
+      this.platform.log.debug('Lamp service initialized');
+    }
 
     const tds = this.service.getCharacteristic(this.platform.Characteristic.TargetDoorState);
     tds
@@ -58,6 +70,30 @@ export class GarageDoorOpenerAccessory {
     this.platform.log.debug('initial door states: ', this.garageState.description());
   }
 
+  private lampOn = false;
+  
+  setLampState(value: CharacteristicValue) {
+    this.lampOn = value as boolean;
+    this.platform.log.debug('Set lamp state ->', this.lampOn);
+    this.platform.publishLampCommand(this.lampOn);
+  }
+
+  getLampState(): CharacteristicValue {
+    if (!this.platform.getIsOnline()) {
+      throw this.notReadyError();
+    }
+    return this.lampOn;
+  }
+
+  updateLampState(value: boolean) {
+    if (this.lampService === null) {
+      return; // lamp not enabled, ignore
+    }
+    this.lampOn = value;
+    this.lampService.getCharacteristic(this.platform.Characteristic.On).updateValue(value);
+    this.platform.log.debug('Updated lamp state ->', value);
+  }
+  
   private notReadyError() {
     return new this.platform.api.hap.HapStatusError(
       this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
